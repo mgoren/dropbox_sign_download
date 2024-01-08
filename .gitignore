@@ -1,0 +1,12 @@
+/.env
+old/
+*.pdf
+student-requests-tmp.txt
+/.bundle
+/log/*.log
+/tmp
+/coverage
+/spec/cassettes
+.vscode/
+/config/master.key
+/.irb_history
