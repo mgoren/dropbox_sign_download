@@ -20,7 +20,8 @@ def get_all_signature_requests
   result = signature_request_api.signature_request_list({page_size: page_size, query: "complete:true"})
   total_pages = result.list_info.num_pages
   total_pages.times do |page_number|
-    result = signature_request_api.signature_request_list({page_size: page_size, page_number:page_number+1, query: "complete:true"})
+    result = signature_request_api.signature_request_list({page_size: page_size, page:page_number+1, query: "complete:true"})
+    puts "loading page #{page_number} of #{total_pages}"
     completed_requests = result.signature_requests.select{|req| !req.test_mode && req.is_complete}
     signature_requests += completed_requests
   end
@@ -45,6 +46,7 @@ def download_requests(requests)
       filename = "#{email}_#{doc_type}_#{signed_at}.pdf"
       next if File.exist?(filename)
       begin
+        puts "downloading: #{req}"
         file_bin = signature_request_api.signature_request_files(req.signature_request_id,{file_type:"pdf"})
         FileUtils.cp(file_bin.path, filename)
       rescue => e
@@ -53,13 +55,15 @@ def download_requests(requests)
       sleep(2.5)
    end
  end
- 
+
 starting = Time.now
+puts "Beginning to load sigature requests at #{starting}"
 requests = get_all_signature_requests
 ending = Time.now
+puts "Finished loading signature requests at #{ending}"
 puts "Time elapsed: #{((ending - starting)/60).round(1)} minutes"
 puts "Completed signature requests: #{requests.count}"
+puts "Beginning download of files"
 puts ""
-binding.pry
-puts requests
+# puts requests
 download_requests(requests)
