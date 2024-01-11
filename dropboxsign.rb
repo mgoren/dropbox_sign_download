@@ -14,16 +14,20 @@ Dropbox::Sign.configure do |config|
 end
 
 def get_all_signature_requests
+  query1 = "complete:true AND created:<2019-01-01"
+  query2 = "complete:true AND created:>=2019-01-01"
+
   signature_request_api = Dropbox::Sign::SignatureRequestApi.new
   page_size=100
   signature_requests=[]
-  result = signature_request_api.signature_request_list({page_size: page_size, query: "complete:true"})
+  result = signature_request_api.signature_request_list({page_size: page_size, query: query1})
   total_pages = result.list_info.num_pages
   total_pages.times do |page_number|
     result = signature_request_api.signature_request_list({page_size: page_size, page:page_number+1, query: "complete:true"})
     puts "loading page #{page_number} of #{total_pages}"
-    completed_requests = result.signature_requests.select{|req| !req.test_mode && req.is_complete}
-    signature_requests += completed_requests
+    # completed_requests = result.signature_requests.select{|req| !req.test_mode && req.is_complete}
+    # signature_requests += completed_requests
+    signature_requests += result.signature_requests
   end
   signature_requests
 end
