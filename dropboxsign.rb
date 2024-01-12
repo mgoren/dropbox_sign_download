@@ -56,7 +56,7 @@ def download_requests(requests)
       rescue => e
         puts "Error downloading #{filename}, #{e.message}"
       end
-      sleep(2.5)
+      sleep(3)
    end
  end
 
